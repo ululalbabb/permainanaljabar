@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Permainan Aljabar</title>
+</head>
+<body>
+  <h1>Permainan Aljabar</h1>
+
+  <p>Selamat datang! Jawab pertanyaan aljabar berikut ini.</p>
+  
+  <p id="question"></p>
+  <input type="number" id="answer">
+  <button onclick="checkAnswer()">Cek Jawaban</button>
+
+  <p>Skor: <span id="score">0</span></p>
+
+  <script>
+    let score = 0;
+
+    function generateQuestion() {
+      const a = Math.floor(Math.random() * 10) + 1;
+      const b = Math.floor(Math.random() * 10) + 1;
+      const operator = Math.random() < 0.5 ? '+' : '-';
+      const question = `${a} ${operator} ${b}`;
+      const answer = operator === '+' ? a + b : a - b;
+      return { question, answer };
+    }
+
+    function displayQuestion() {
+      const { question, answer } = generateQuestion();
+      document.getElementById("question").textContent = `Hitung: ${question}`;
+      return answer;
+    }
+
+    function checkAnswer() {
+      const playerAnswer = parseInt(document.getElementById("answer").value);
+      const correctAnswer = displayQuestion();
+
+      if (playerAnswer === correctAnswer) {
+        score++;
+        alert("Benar!");
+      } else {
+        alert(`Salah. Jawaban yang benar adalah ${correctAnswer}.`);
+      }
+
+      document.getElementById("score").textContent = score;
+    }
+
+    // Mulai permainan dengan pertanyaan pertama
+    displayQuestion();
+  </script>
+</body>
+</html>
