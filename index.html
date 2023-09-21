@@ -1,53 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Permainan Aljabar</title>
+  <title>Permainan Ular Tangga</title>
+  <style>
+    .board {
+      display: grid;
+      grid-template-columns: repeat(10, 50px);
+      grid-template-rows: repeat(10, 50px);
+      gap: 2px;
+    }
+
+    .square {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 1px solid #000;
+    }
+
+    .player {
+      background-color: #FF5733;
+      color: #FFF;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 <body>
-  <h1>Permainan Aljabar</h1>
-
-  <p>Selamat datang! Jawab pertanyaan aljabar berikut ini.</p>
-  
-  <p id="question"></p>
-  <input type="number" id="answer">
-  <button onclick="checkAnswer()">Cek Jawaban</button>
-
-  <p>Skor: <span id="score">0</span></p>
+  <h1>Permainan Ular Tangga</h1>
+  <div class="board" id="board"></div>
+  <button onclick="rollDice()">Gulir Dadu</button>
+  <p>Player 1: <span id="player1Score">0</span></p>
+  <p>Player 2: <span id="player2Score">0</span></p>
 
   <script>
-    let score = 0;
+    const boardSize = 10;
+    const board = document.getElementById("board");
+    const player1Score = document.getElementById("player1Score");
+    const player2Score = document.getElementById("player2Score");
+    let currentPlayer = 1;
+    let player1Position = 1;
+    let player2Position = 1;
 
-    function generateQuestion() {
-      const a = Math.floor(Math.random() * 10) + 1;
-      const b = Math.floor(Math.random() * 10) + 1;
-      const operator = Math.random() < 0.5 ? '+' : '-';
-      const question = `${a} ${operator} ${b}`;
-      const answer = operator === '+' ? a + b : a - b;
-      return { question, answer };
-    }
-
-    function displayQuestion() {
-      const { question, answer } = generateQuestion();
-      document.getElementById("question").textContent = `Hitung: ${question}`;
-      return answer;
-    }
-
-    function checkAnswer() {
-      const playerAnswer = parseInt(document.getElementById("answer").value);
-      const correctAnswer = displayQuestion();
-
-      if (playerAnswer === correctAnswer) {
-        score++;
-        alert("Benar!");
-      } else {
-        alert(`Salah. Jawaban yang benar adalah ${correctAnswer}.`);
+    function createBoard() {
+      for (let i = 1; i <= boardSize * boardSize; i++) {
+        const square = document.createElement("div");
+        square.classList.add("square");
+        square.textContent = i;
+        board.appendChild(square);
       }
-
-      document.getElementById("score").textContent = score;
     }
 
-    // Mulai permainan dengan pertanyaan pertama
-    displayQuestion();
+    function updatePlayers() {
+      const squares = document.querySelectorAll(".square");
+      squares[player1Position - 1].removeChild(player1);
+      squares[player2Position - 1].removeChild(player2);
+
+      squares[player1Position - 1].appendChild(player1);
+      squares[player2Position - 1].appendChild(player2);
+    }
+
+    function rollDice() {
+      const diceRoll = Math.floor(Math.random() * 6) + 1;
+      const newPosition = currentPlayer === 1 ? player1Position + diceRoll : player2Position + diceRoll;
+      const winPosition = boardSize * boardSize;
+
+      if (newPosition <= winPosition) {
+        currentPlayer === 1 ? (player1Position = newPosition) : (player2Position = newPosition);
+        updatePlayers();
+
+        if (newPosition === winPosition) {
+          alert(`Player ${currentPlayer} menang!`);
+          currentPlayer === 1 ? player1Score.textContent++ : player2Score.textContent++;
+          player1Position = 1;
+          player2Position = 1;
+          updatePlayers();
+        } else {
+          currentPlayer = currentPlayer === 1 ? 2 : 1;
+        }
+      }
+    }
+
+    const player1 = document.createElement("div");
+    player1.classList.add("player");
+    player1.textContent = "1";
+
+    const player2 = document.createElement("div");
+    player2.classList.add("player");
+    player2.textContent = "2";
+
+    createBoard();
+    updatePlayers();
   </script>
 </body>
 </html>
